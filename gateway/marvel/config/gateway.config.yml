@@ -1,0 +1,61 @@
+http:
+  port: 80
+admin:
+  port: 9876
+  host: localhost
+apiEndpoints:
+  colaborators:
+    host: localhost
+    methods: ALL
+    paths:
+      - '/marvel/colaborators/'
+      - '/marvel/colaborators/*'
+      - '/marvel/colaborators/:hero'
+  characters:
+    host: localhost
+    methods: ALL
+    paths:
+      - '/marvel/characters/'
+      - '/marvel/characters/*'
+      - '/marvel/characters/:hero'
+serviceEndpoints:
+  colaborators:
+    url: 'http://localhost:3031'
+  characters:
+    url: 'http://localhost:3032'
+policies:
+  - basic-auth
+  - cors
+  - expression
+  - key-auth
+  - log
+  - oauth2
+  - proxy
+  - rate-limit
+pipelines:
+  - name: colaborators
+    apiEndpoints:
+      - colaborators
+    policies:
+      - proxy:
+          - action:
+              serviceEndpoint: colaborators
+              changeOrigin: true
+              prependPath: true
+              ignorePath: false
+              stripPath: false
+            path: '/'
+            method: ALL
+  - name: characters
+    apiEndpoints:
+      - characters
+    policies:
+      - proxy:
+          - action:
+              serviceEndpoint: characters
+              changeOrigin: true
+              prependPath: true
+              ignorePath: false
+              stripPath: false
+            path: '/'
+            method: ALL
